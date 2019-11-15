@@ -16,6 +16,11 @@ type Image struct {
 	VirtualSize int         `json:"VirtualSize"`
 }
 
+//GetID 容器ID
+func (c *Image) GetID() string {
+	return c.ID[0:12]
+}
+
 //ImageList 获取image列表
 func (a *API) ImageList() (*[]Image, error) {
 	//curl --unix-socket /var/run/docker.sock http:/v1.24/images/json

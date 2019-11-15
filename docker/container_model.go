@@ -231,3 +231,8 @@ type NetworkSettings struct {
 func (c *Container) GetID() string {
 	return c.ID[0:12]
 }
+
+//GetImageID Image ID
+func (c *Container) GetImageID() string {
+	return c.ImageID[7:19]
+}
