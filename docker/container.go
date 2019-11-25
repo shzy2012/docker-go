@@ -38,7 +38,7 @@ func (a *API) ContainerGet(id string) (*ContainerDetail, error) {
 /*ContainerRun 运行容器
 @id：容器ID
 */
-func (a *API) ContainerRun(image string, cmds []string) (*ContainerDetail, error) {
+func (a *API) ContainerRun(image string, param *ContainerConfig) (*IDResponse, error) {
 	/*
 		curl --unix-socket /var/run/docker.sock -H "Content-Type: application/json" \
 		  -d '{"Image": "alpine", "Cmd": ["echo", "hello world"]}' \
@@ -47,13 +47,32 @@ func (a *API) ContainerRun(image string, cmds []string) (*ContainerDetail, error
 		{"Id":"1c6594faf5","Warnings":null}
 	*/
 
-	cmdURL := fmt.Sprintf(`/containers/create`)
-	pkg, err := a.Post(cmdURL)
+	// cmdURL := fmt.Sprintf(`/containers/create`)
+	// pkg, err := a.Post(cmdURL)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// result := &ContainerDetail{}
+	// err = json.Unmarshal([]byte(pkg.Body), result)
+	// return result, err
+
+	// cmdline := fmt.Sprintf(`docker run -d -p 80:80 -p 443:443 -p 22:22 \
+	// --name nginx-proxy \
+	// --restart always \
+	// --label com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy \
+	// -v /path/to/certs:/etc/nginx/certs:ro \
+	// -v /var/nginx/vhost.d:/etc/nginx/vhost.d \
+	// -v /usr/share/nginx/html \
+	// -v /var/run/docker.sock:/tmp/docker.sock:ro \
+	// jwilder/nginx-proxy:v1`)
+
+	pkg, err := a.PostWithParam("/containers/create", param)
 	if err != nil {
 		return nil, err
 	}
 
-	result := &ContainerDetail{}
+	result := &IDResponse{}
 	err = json.Unmarshal([]byte(pkg.Body), result)
 	return result, err
 }

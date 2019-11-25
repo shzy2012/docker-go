@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"os/exec"
 	"strconv"
 	"strings"
 	"sync"
@@ -25,6 +26,16 @@ const (
 	POST Action = "POST"
 	//GET 类型
 	GET Action = "GET"
+)
+
+//Protocol 协议类型
+type Protocol string
+
+const (
+	//TCP 类型
+	TCP Action = "tcp"
+	//UDP 类型
+	UDP Action = "udp"
 )
 
 //API Docker API
@@ -65,7 +76,7 @@ func (a *API) Reqeust(action Action, url, body string) (*PKG, error) {
 		}
 	}
 
-	urlCmd := fmt.Sprintf("%s %s HTTP/1.0\r\n\r\n", action, url)
+	urlCmd := fmt.Sprintf("%s %s HTTP/1.0\r\n", action, url)
 
 	//处理body
 	if body != "" {
@@ -86,6 +97,7 @@ func (a *API) Reqeust(action Action, url, body string) (*PKG, error) {
 		return nil, err
 	}
 
+	//debug 模式
 	if a.Debug {
 		log.Debugf("[Message from server]=>\n%s\n", status)
 	}
@@ -95,6 +107,7 @@ func (a *API) Reqeust(action Action, url, body string) (*PKG, error) {
 		return nil, err
 	}
 
+	//解析协议
 	list := strings.Split(status, "\r\n")
 	if a.Debug {
 		log.Debugf("[Split status len]=> %v\n", len(list))
@@ -165,4 +178,22 @@ func (a *API) Get(url string) (*PKG, error) {
 */
 func (a *API) Post(url string) (*PKG, error) {
 	return a.Reqeust(POST, url, "")
+}
+
+/*PostWithParam 执行POST操作
+@url：cmd的路径 类似/containers/create
+@param：参数
+*/
+func (a *API) PostWithParam(url string, param interface{}) (*PKG, error) {
+	return a.Reqeust(POST, url, "")
+}
+
+/*Exec 执行bash操作
+@cmd：命令
+*/
+func (a *API) Exec(cmdline string) (string, error) {
+	cmd := exec.Command("sh", "-c", cmdline)
+	stdoutStderr, err := cmd.CombinedOutput()
+
+	return string(stdoutStderr), err
 }

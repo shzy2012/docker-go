@@ -59,7 +59,20 @@ func Test_ContainerGet(t *testing.T) {
 
 func Test_ContainerRun(t *testing.T) {
 
-	result, err := api.ContainerRun("cbea06bebab4", nil)
+	portMap := []PortMap{
+		PortMap{1111, 222},
+		PortMap{1111, 222},
+		PortMap{1111, 222},
+		PortMap{1111, 222},
+	}
+
+	param := &ContainerConfig{
+		Name:    "shzy2012",
+		PortMap: portMap,
+		Env:     []string{"MYSQL_ROOT_PASSWORD=my-secret-pw"},
+	}
+
+	result, err := api.ContainerRun("jwilder/nginx-proxy:v1", param)
 	if err != nil {
 		fmt.Printf("Test_ContainerRun=> %s\n", err.Error())
 		return

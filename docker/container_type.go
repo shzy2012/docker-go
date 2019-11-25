@@ -236,3 +236,22 @@ func (c *Container) GetID() string {
 func (c *Container) GetImageID() string {
 	return c.ImageID[7:19]
 }
+
+//ContainerConfig 创建容器配置参数
+type ContainerConfig struct {
+	Name    string    //容器名称
+	PortMap []PortMap //端口映射
+	Env     []string  //环境变量 ["FOO=bar","BAZ=quux"]
+}
+
+//PortMap 端口映射
+type PortMap struct {
+	HostPort      int //主机端口
+	ContainerPort int //对应的容器端口
+}
+
+//IDResponse 创建响应
+type IDResponse struct {
+	ID       string        `json:"Id"`
+	Warnings []interface{} `json:"Warnings"`
+}
